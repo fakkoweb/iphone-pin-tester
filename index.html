@@ -1,160 +1,264 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<meta charset="UTF-8">
-<title>PIN Practice</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>PIN Practice</title>
 
-<style>
-body {
-  margin: 0;
-  height: 100vh;
-  background: #000;
-  color: white;
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
+  <style>
+    :root{
+      --bg: #000;
+      --btn: #1c1c1e;
+      --btnActive: #3a3a3c;
+      --muted: #8e8e93;
+      --dotBorder: #5a5a5f;
 
-.dots {
-  display: flex;
-  gap: 15px;
-  margin-bottom: 40px;
-}
+      /* Dimensioni responsive */
+      --key: clamp(64px, 18vw, 84px);        /* diametro tasto */
+      --gap: clamp(12px, 4vw, 22px);         /* spazio tra tasti */
+      --dot: clamp(12px, 3vw, 16px);         /* pallino */
+      --dotGap: clamp(10px, 3vw, 16px);      /* spazio tra pallini */
+      --fontKey: clamp(22px, 6vw, 30px);     /* numero tasto */
+      --fontSmall: clamp(13px, 3.5vw, 15px); /* testo sotto */
+      --pad: clamp(16px, 6vw, 28px);
+    }
 
-.dot {
-  width: 14px;
-  height: 14px;
-  border: 2px solid #555;
-  border-radius: 50%;
-}
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: #fff;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif;
 
-.dot.filled {
-  background: white;
-  border-color: white;
-}
+      /* Safe area per iPhone con notch */
+      padding:
+        calc(env(safe-area-inset-top) + var(--pad))
+        calc(env(safe-area-inset-right) + var(--pad))
+        calc(env(safe-area-inset-bottom) + var(--pad))
+        calc(env(safe-area-inset-left) + var(--pad));
 
-.keypad {
-  display: grid;
-  grid-template-columns: repeat(3, 80px);
-  gap: 20px;
-}
+      display: grid;
+      place-items: center;
+    }
 
-button {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  border: none;
-  font-size: 28px;
-  color: white;
-  background: #1c1c1e;
-  cursor: pointer;
-}
+    .wrap{
+      width: min(420px, 100%);
+      display: grid;
+      justify-items: center;
+      gap: clamp(16px, 5vw, 28px);
+    }
 
-button:active {
-  background: #444;
-}
+    .title{
+      font-size: clamp(16px, 4.5vw, 18px);
+      color: #d1d1d6;
+      text-align: center;
+      margin-top: clamp(0px, 1vh, 10px);
+    }
 
-.controls {
-  margin-top: 20px;
-}
+    .dots {
+      display: flex;
+      gap: var(--dotGap);
+      align-items: center;
+      justify-content: center;
+      min-height: calc(var(--dot) + 8px);
+    }
 
-.control-btn {
-  background: none;
-  color: #aaa;
-  font-size: 16px;
-  border: none;
-  cursor: pointer;
-}
+    .dot {
+      width: var(--dot);
+      height: var(--dot);
+      border: 2px solid var(--dotBorder);
+      border-radius: 999px;
+      opacity: 0.95;
+    }
+    .dot.filled {
+      background: #fff;
+      border-color: #fff;
+    }
 
-.log {
-  margin-top: 25px;
-  max-width: 260px;
-  font-size: 14px;
-  color: #888;
-  text-align: center;
-  word-wrap: break-word;
-}
-</style>
+    .keypad {
+      display: grid;
+      grid-template-columns: repeat(3, var(--key));
+      gap: var(--gap);
+      justify-content: center;
+      align-content: center;
+      width: 100%;
+    }
+
+    .key {
+      width: var(--key);
+      height: var(--key);
+      border-radius: 999px;
+      border: none;
+      background: var(--btn);
+      color: #fff;
+      font-size: var(--fontKey);
+      line-height: 1;
+      cursor: pointer;
+
+      display: grid;
+      place-items: center;
+
+      /* rende più “iOS” */
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    .key:active { background: var(--btnActive); }
+    .key.hidden { visibility: hidden; }
+
+    .controls{
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      margin-top: clamp(-4px, -1vh, 0px);
+    }
+
+    .control-btn{
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      font-size: var(--fontSmall);
+      cursor: pointer;
+      padding: 8px 10px;
+      border-radius: 10px;
+    }
+    .control-btn:active{
+      background: rgba(255,255,255,0.06);
+      color: #c7c7cc;
+    }
+
+    .log{
+      width: 100%;
+      text-align: center;
+      color: var(--muted);
+      font-size: var(--fontSmall);
+      line-height: 1.35;
+      word-break: break-word;
+      min-height: 2.2em;
+    }
+
+    /* Se lo schermo è bassissimo (landscape), comprime un po’ */
+    @media (max-height: 520px){
+      .wrap{ gap: 12px; }
+      .title{ display:none; }
+    }
+  </style>
 </head>
 
 <body>
+  <div class="wrap">
+    <div class="title">Inserisci codice</div>
 
-<div class="dots" id="dots"></div>
-<div class="keypad" id="keypad"></div>
+    <div class="dots" id="dots" aria-label="PIN dots"></div>
 
-<div class="controls">
-  <button class="control-btn" onclick="clearPin()">Reset</button>
-</div>
+    <div class="keypad" id="keypad" aria-label="Keypad"></div>
 
-<div class="log" id="log"></div>
+    <div class="controls">
+      <button class="control-btn" type="button" onclick="backspace()">Cancella</button>
+      <button class="control-btn" type="button" onclick="clearAll()">Reset</button>
+      <button class="control-btn" type="button" onclick="toggleDigits()">4/6 cifre</button>
+    </div>
+
+    <div class="log" id="log"></div>
+  </div>
 
 <script>
-const MAX_DIGITS = 6;
-let pin = "";
-let history = [];
+  // Config iniziale
+  let MAX_DIGITS = 6;
+  let pin = "";
+  let history = [];
 
-const dotsContainer = document.getElementById("dots");
-const keypad = document.getElementById("keypad");
-const log = document.getElementById("log");
+  const dotsContainer = document.getElementById("dots");
+  const keypad = document.getElementById("keypad");
+  const logEl = document.getElementById("log");
 
-// crea pallini
-for (let i = 0; i < MAX_DIGITS; i++) {
-  const dot = document.createElement("div");
-  dot.className = "dot";
-  dotsContainer.appendChild(dot);
-}
-
-// tastierino
-const keys = [1,2,3,4,5,6,7,8,9,"",0,""];
-
-keys.forEach(key => {
-  const btn = document.createElement("button");
-
-  if (key !== "") {
-    btn.textContent = key;
-    btn.onclick = () => addDigit(key);
-  } else {
-    btn.style.visibility = "hidden";
+  function buildDots() {
+    dotsContainer.innerHTML = "";
+    for (let i = 0; i < MAX_DIGITS; i++) {
+      const dot = document.createElement("div");
+      dot.className = "dot";
+      dotsContainer.appendChild(dot);
+    }
+    updateDots();
   }
 
-  keypad.appendChild(btn);
-});
+  function buildKeypad() {
+    keypad.innerHTML = "";
+    const keys = [1,2,3,4,5,6,7,8,9,"",0,""];
 
-function addDigit(digit) {
-  if (pin.length >= MAX_DIGITS) return;
+    keys.forEach(key => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "key";
 
-  pin += digit;
-  updateDots();
+      if (key === "") {
+        btn.classList.add("hidden");
+      } else {
+        btn.textContent = key;
+        btn.addEventListener("click", () => addDigit(String(key)));
+      }
 
-  if (pin.length === MAX_DIGITS) {
-    history.unshift(pin);
-    updateLog();
-
-    setTimeout(() => {
-      pin = "";
-      updateDots();
-    }, 500);
+      keypad.appendChild(btn);
+    });
   }
-}
 
-function clearPin() {
-  pin = "";
-  updateDots();
-}
+  function updateDots() {
+    const dots = dotsContainer.querySelectorAll(".dot");
+    dots.forEach((dot, i) => {
+      dot.classList.toggle("filled", i < pin.length);
+    });
+  }
 
-function updateDots() {
-  const dots = document.querySelectorAll(".dot");
-  dots.forEach((dot, i) => {
-    dot.classList.toggle("filled", i < pin.length);
-  });
-}
+  function updateLog() {
+    if (history.length === 0) {
+      logEl.textContent = "";
+      return;
+    }
+    logEl.innerHTML = "Tentativi:<br>" + history.slice(0, 10).join(" • ");
+  }
 
-function updateLog() {
-  log.innerHTML = "Tentativi:<br>" + history.slice(0, 10).join(" • ");
-}
+  function addDigit(d) {
+    if (pin.length >= MAX_DIGITS) return;
+
+    pin += d;
+    updateDots();
+
+    if (pin.length === MAX_DIGITS) {
+      history.unshift(pin);
+      updateLog();
+
+      // reset automatico dopo breve delay
+      setTimeout(() => {
+        pin = "";
+        updateDots();
+      }, 450);
+    }
+  }
+
+  function backspace() {
+    if (pin.length === 0) return;
+    pin = pin.slice(0, -1);
+    updateDots();
+  }
+
+  function clearAll() {
+    pin = "";
+    updateDots();
+  }
+
+  function toggleDigits() {
+    // switch 6 <-> 4
+    MAX_DIGITS = (MAX_DIGITS === 6) ? 4 : 6;
+    pin = "";
+    buildDots();
+  }
+
+  // Init
+  buildDots();
+  buildKeypad();
 </script>
-
 </body>
 </html>
