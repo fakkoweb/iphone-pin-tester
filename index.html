@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>PIN Practice</title>
+
+<style>
+body {
+  margin: 0;
+  height: 100vh;
+  background: #000;
+  color: white;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.dots {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 40px;
+}
+
+.dot {
+  width: 14px;
+  height: 14px;
+  border: 2px solid #555;
+  border-radius: 50%;
+}
+
+.dot.filled {
+  background: white;
+  border-color: white;
+}
+
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 80px);
+  gap: 20px;
+}
+
+button {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: none;
+  font-size: 28px;
+  color: white;
+  background: #1c1c1e;
+  cursor: pointer;
+}
+
+button:active {
+  background: #444;
+}
+
+.controls {
+  margin-top: 20px;
+}
+
+.control-btn {
+  background: none;
+  color: #aaa;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+}
+
+.log {
+  margin-top: 25px;
+  max-width: 260px;
+  font-size: 14px;
+  color: #888;
+  text-align: center;
+  word-wrap: break-word;
+}
+</style>
+</head>
+
+<body>
+
+<div class="dots" id="dots"></div>
+<div class="keypad" id="keypad"></div>
+
+<div class="controls">
+  <button class="control-btn" onclick="clearPin()">Reset</button>
+</div>
+
+<div class="log" id="log"></div>
+
+<script>
+const MAX_DIGITS = 6;
+let pin = "";
+let history = [];
+
+const dotsContainer = document.getElementById("dots");
+const keypad = document.getElementById("keypad");
+const log = document.getElementById("log");
+
+// crea pallini
+for (let i = 0; i < MAX_DIGITS; i++) {
+  const dot = document.createElement("div");
+  dot.className = "dot";
+  dotsContainer.appendChild(dot);
+}
+
+// tastierino
+const keys = [1,2,3,4,5,6,7,8,9,"",0,""];
+
+keys.forEach(key => {
+  const btn = document.createElement("button");
+
+  if (key !== "") {
+    btn.textContent = key;
+    btn.onclick = () => addDigit(key);
+  } else {
+    btn.style.visibility = "hidden";
+  }
+
+  keypad.appendChild(btn);
+});
+
+function addDigit(digit) {
+  if (pin.length >= MAX_DIGITS) return;
+
+  pin += digit;
+  updateDots();
+
+  if (pin.length === MAX_DIGITS) {
+    history.unshift(pin);
+    updateLog();
+
+    setTimeout(() => {
+      pin = "";
+      updateDots();
+    }, 500);
+  }
+}
+
+function clearPin() {
+  pin = "";
+  updateDots();
+}
+
+function updateDots() {
+  const dots = document.querySelectorAll(".dot");
+  dots.forEach((dot, i) => {
+    dot.classList.toggle("filled", i < pin.length);
+  });
+}
+
+function updateLog() {
+  log.innerHTML = "Tentativi:<br>" + history.slice(0, 10).join(" • ");
+}
+</script>
+
+</body>
+</html>
